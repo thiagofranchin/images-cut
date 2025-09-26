@@ -198,7 +198,6 @@ function bindCardEvents(item) {
     item.settings.rotation = parseInt(rotationSlider.value, 10);
     updatePreview(item);
   });
-
   rotationLeftBtn.addEventListener('click', () => {
     item.settings.rotation = normalizeAngle(item.settings.rotation - 90);
     rotationSlider.value = item.settings.rotation;
@@ -210,7 +209,6 @@ function bindCardEvents(item) {
     rotationSlider.value = item.settings.rotation;
     updatePreview(item);
   });
-
   scaleSlider.addEventListener('input', () => {
     item.settings.scale = parseFloat(scaleSlider.value);
     updatePreview(item);
@@ -417,7 +415,6 @@ function drawOriginalOverlay(item) {
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
-
   ctx.save();
   ctx.translate(canvas.width / 2 + offsetX, canvas.height / 2 + offsetY);
   ctx.rotate((item.settings.rotation * Math.PI) / 180);
