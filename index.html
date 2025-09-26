@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CutPro Studio - Recorte inteligente para e-commerce</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="branding">
+        <div class="logo-circle">C</div>
+        <div>
+          <h1>CutPro Studio</h1>
+          <p>Still perfeito em minutos</p>
+        </div>
+      </div>
+      <section class="sidebar-section">
+        <h2>Upload</h2>
+        <p>Arraste e solte arquivos JPG, PNG, WEBP ou GIF ou use o botão abaixo.</p>
+        <label class="upload-button">
+          <input id="fileInput" type="file" accept="image/png, image/jpeg, image/webp, image/gif" multiple>
+          Selecionar imagens
+        </label>
+        <div id="dropZone" class="drop-zone">
+          <span>Arraste as imagens aqui</span>
+        </div>
+      </section>
+      <section class="sidebar-section">
+        <h2>Preset de proporção</h2>
+        <div class="ratio-grid" id="ratioButtons">
+          <button data-ratio="1:1" class="ratio-btn active">1:1</button>
+          <button data-ratio="4:5" class="ratio-btn">4:5</button>
+          <button data-ratio="16:9" class="ratio-btn">16:9</button>
+          <button data-ratio="3:4" class="ratio-btn">3:4</button>
+          <button data-ratio="5:2" class="ratio-btn">5:2</button>
+          <button data-ratio="free" class="ratio-btn">Livre</button>
+        </div>
+        <div class="custom-dimensions">
+          <label>
+            Largura
+            <input type="number" id="customWidth" min="200" max="4000" value="1200">
+          </label>
+          <label>
+            Altura
+            <input type="number" id="customHeight" min="200" max="4000" value="1200">
+          </label>
+        </div>
+      </section>
+      <section class="sidebar-section">
+        <h2>Ajustes globais</h2>
+        <div class="control">
+          <label for="rotation">Rotação</label>
+          <input type="range" id="rotation" min="-180" max="180" value="0" step="1">
+          <div class="control-value"><span id="rotationValue">0°</span></div>
+        </div>
+        <div class="control">
+          <label for="tolerance">Tolerância do recorte</label>
+          <input type="range" id="tolerance" min="0" max="255" value="30" step="1">
+          <div class="control-value"><span id="toleranceValue">30</span></div>
+        </div>
+        <div class="bulk-actions">
+          <button id="applySelected" class="primary">Aplicar nos selecionados</button>
+          <button id="restoreSelected" class="ghost">Restaurar selecionados</button>
+        </div>
+      </section>
+      <section class="sidebar-section">
+        <h2>Downloads</h2>
+        <button id="downloadSelected" class="primary">Baixar selecionados</button>
+        <button id="downloadAll" class="secondary">Baixar tudo em lote</button>
+      </section>
+    </aside>
+
+    <main class="main-content">
+      <header class="toolbar">
+        <div class="toolbar-left">
+          <h2>Biblioteca</h2>
+          <p>Selecione uma imagem para editar. Use o painel lateral para ações em grupo.</p>
+        </div>
+        <div class="view-switch">
+          <button data-view="processed" class="view-btn active">Processada</button>
+          <button data-view="original" class="view-btn">Original</button>
+        </div>
+      </header>
+
+      <section id="gallery" class="gallery">
+        <div class="empty-state">
+          <div class="empty-icon">📷</div>
+          <h3>Importe suas imagens</h3>
+          <p>Comece arrastando seus produtos para cá e veja o still perfeito ganhar vida.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <template id="imageCardTemplate">
+    <article class="image-card">
+      <div class="card-header">
+        <label class="custom-checkbox">
+          <input type="checkbox" class="select-checkbox">
+          <span></span>
+        </label>
+        <div class="filename" data-filename></div>
+        <button class="restore-btn" title="Restaurar alterações">Restaurar</button>
+      </div>
+      <div class="canvas-wrapper">
+        <canvas class="preview-canvas" width="600" height="600"></canvas>
+        <canvas class="overlay-canvas" width="600" height="600"></canvas>
+      </div>
+      <div class="card-controls">
+        <div class="control-inline">
+          <label>Rotação individual</label>
+          <input type="range" class="rotation-slider" min="-180" max="180" step="1" value="0">
+        </div>
+        <div class="control-inline">
+          <label>Escala da foto</label>
+          <input type="range" class="scale-slider" min="0.5" max="2.5" step="0.01" value="1">
+        </div>
+        <div class="control-inline">
+          <label>Deslocamento X</label>
+          <input type="range" class="offset-x-slider" min="-1" max="1" step="0.01" value="0">
+        </div>
+        <div class="control-inline">
+          <label>Deslocamento Y</label>
+          <input type="range" class="offset-y-slider" min="-1" max="1" step="0.01" value="0">
+        </div>
+        <div class="control-inline">
+          <label>Tolerância local</label>
+          <input type="range" class="tolerance-slider" min="0" max="255" step="1" value="30">
+        </div>
+        <div class="layer-grid">
+          <label>
+            Camada Largura
+            <input type="number" class="layer-width" min="200" max="4000" value="1200">
+          </label>
+          <label>
+            Camada Altura
+            <input type="number" class="layer-height" min="200" max="4000" value="1200">
+          </label>
+        </div>
+      </div>
+      <div class="card-footer">
+        <button class="download-btn">Baixar</button>
+        <button class="toggle-btn" data-state="processed">Ver original</button>
+      </div>
+    </article>
+  </template>
+</body>
+</html>
