@@ -58,7 +58,11 @@
         <h2>Ajustes globais</h2>
         <div class="control">
           <label for="rotation">Rotação</label>
-          <input type="range" id="rotation" min="-180" max="180" value="0" step="1">
+          <div class="rotation-control">
+            <button id="rotationLeft" class="rotation-step" type="button" title="Rotacionar -90°">⬅️</button>
+            <input type="range" id="rotation" min="-180" max="180" value="0" step="1">
+            <button id="rotationRight" class="rotation-step" type="button" title="Rotacionar +90°">➡️</button>
+          </div>
           <div class="control-value"><span id="rotationValue">0°</span></div>
         </div>
         <div class="control">
@@ -115,9 +119,13 @@
         <canvas class="overlay-canvas" width="600" height="600"></canvas>
       </div>
       <div class="card-controls">
-        <div class="control-inline">
+        <div class="control-inline rotation-inline">
           <label>Rotação individual</label>
-          <input type="range" class="rotation-slider" min="-180" max="180" step="1" value="0">
+          <div class="rotation-control">
+            <button class="rotation-step card-rotation-left" type="button" title="-90°">⬅️</button>
+            <input type="range" class="rotation-slider" min="-180" max="180" step="1" value="0">
+            <button class="rotation-step card-rotation-right" type="button" title="+90°">➡️</button>
+          </div>
         </div>
         <div class="control-inline">
           <label>Escala da foto</label>
@@ -134,6 +142,21 @@
         <div class="control-inline">
           <label>Tolerância local</label>
           <input type="range" class="tolerance-slider" min="0" max="255" step="1" value="30">
+        </div>
+        <div class="manual-tools">
+          <div class="tool-group">
+            <button class="tool-btn active" data-tool="wand" type="button">Varinha mágica</button>
+            <button class="tool-btn" data-tool="quick" type="button">Seleção rápida</button>
+            <button class="tool-btn" data-tool="object" type="button">Seleção de objeto</button>
+          </div>
+          <div class="tool-group">
+            <button class="mode-btn active" data-mode="add" type="button">Manter</button>
+            <button class="mode-btn" data-mode="erase" type="button">Remover</button>
+          </div>
+          <div class="control-inline">
+            <label>Tamanho da ferramenta</label>
+            <input type="range" class="tool-size-slider" min="5" max="240" step="1" value="80">
+          </div>
         </div>
         <div class="layer-grid">
           <label>
